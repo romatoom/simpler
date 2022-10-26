@@ -3,6 +3,7 @@ require 'singleton'
 require 'sequel'
 require_relative 'router'
 require_relative 'controller'
+require 'byebug'
 
 module Simpler
   class Application
@@ -28,8 +29,15 @@ module Simpler
 
     def call(env)
       route = @router.route_for(env)
-      controller = route.controller.new(env)
-      action = route.action
+
+      if route
+        env['simpler.route_params'] = route.params
+        controller = route.controller.new(env)
+        action = route.action
+      else
+        controller = Controller.new(env)
+        action = 'page_not_found'
+      end
 
       make_response(controller, action)
     end

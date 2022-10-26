@@ -1,18 +1,15 @@
-require 'erb'
+require_relative 'view/view_render'
 
 module Simpler
   class View
-
-    VIEW_BASE_PATH = 'app/views'.freeze
+    include ViewRender
 
     def initialize(env)
       @env = env
     end
 
     def render(binding)
-      template = File.read(template_path)
-
-      ERB.new(template).result(binding)
+      send("render_#{type_of_render.to_s}".to_sym, binding)
     end
 
     private
@@ -25,15 +22,16 @@ module Simpler
       @env['simpler.action']
     end
 
-    def template
-      @env['simpler.template']
+    def render_options
+      @env['simpler.render_options']
     end
 
-    def template_path
-      path = template || [controller.name, action].join('/')
-
-      Simpler.root.join(VIEW_BASE_PATH, "#{path}.html.erb")
+    def type_of_render
+      render_options.keys.first
     end
 
+    def rendering_value
+      render_options[type_of_render]
+    end
   end
 end
