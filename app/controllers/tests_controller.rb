@@ -4,9 +4,7 @@ class TestsController < Simpler::Controller
     render 'tests/show'
   end
 
-  def create
-  end
+  def create; end
 
-  def show
-  end
+  def show; end
 end
